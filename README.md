@@ -1,5 +1,7 @@
 # MatrixTrace
 
+> **V2.1 UI consistency release:** the standalone workbench and umairdanish.com integration now use the same visual system as the existing Software catalog and algorithm-software pages.
+
 Trace every scalar product in A×B on public datasets or matrices you provide yourself.
 
 ## What V2 adds
