@@ -1,19 +1,15 @@
 # MatrixTrace
 
-**Matrix Computation Debugger**
+Trace every scalar product in A×B on public datasets or matrices you provide yourself.
 
-Click through matrix multiplication logic and inspect every scalar product that contributes to an output cell.
+## What V2 adds
 
-## Features
-- Browser-local matrix analysis: source matrices never leave the page.
-- Six built-in realistic examples so the application is immediately demonstrable.
-- CSV/text upload and direct paste.
-- Responsive single-column mobile layout and two-column laptop/desktop workspace.
-- Deterministic JavaScript matrix engine with automated tests.
+- 34 public-data benchmark fixtures with source links
+- 34/34 public dataset verification against NumPy reference results
+- user-owned CSV, TSV, TXT, JSON, and Matrix Market upload for both A and B
+- browser-local processing (no code/data server upload)
+- responsive UI for phones, tablets, laptops, and desktops
 
-## Test
-```bash
-npm test
-```
+Run tests: `npm test`
 
-Part of the Matrix Lab collection on [umairdanish.com](https://umairdanish.com/).
+See `PUBLIC-DATA-VERIFICATION.md` for the full dataset table.
