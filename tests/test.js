@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {multiply,transpose,hadamard,kron,sparsity,classifyStructure,memoryModel,traceCell,estimateOps,normalizeRows,slice,parseMatrix} from '../engine.js';
+import {multiply,transpose,hadamard,kron,sparsity,classifyStructure,memoryModel,traceCell,estimateOps,normalizeRows,slice,parseMatrix,parseUploadedMatrix} from '../engine.js';
 const cases=[]; const ok=(n,f)=>{try{f();cases.push([n,true])}catch(e){cases.push([n,false,e.message])}}
 ok('2x2 multiply',()=>assert.deepEqual(multiply([[1,2],[3,4]],[[5,6],[7,8]]),[[19,22],[43,50]]));
 ok('rectangular multiply',()=>assert.deepEqual(multiply([[1,2,3]],[[1],[2],[3]]),[[14]]));
@@ -25,4 +25,9 @@ ok('parse spaces',()=>assert.deepEqual(parseMatrix('1 2\n3 4'),[[1,2],[3,4]]));
 ok('dimension rejection',()=>assert.throws(()=>multiply([[1,2]],[[1,2]])));
 ok('ragged parse rejection',()=>assert.throws(()=>parseMatrix('1 2\n3')));
 ok('negative values',()=>assert.deepEqual(multiply([[-1,2]],[[3],[4]]),[[5]]));
+ok('upload CSV with header + id',()=>assert.deepEqual(parseUploadedMatrix('id,x,y\na,1,2\nb,3,4','sample.csv'),[[1,2],[3,4]]));
+ok('upload TSV',()=>assert.deepEqual(parseUploadedMatrix('1\t2\n3\t4','sample.tsv'),[[1,2],[3,4]]));
+ok('upload JSON matrix',()=>assert.deepEqual(parseUploadedMatrix('[[1,2],[3,4]]','sample.json'),[[1,2],[3,4]]));
+ok('upload Matrix Market coordinate',()=>assert.deepEqual(parseUploadedMatrix('%%MatrixMarket matrix coordinate real general\n2 2 2\n1 1 3\n2 2 4','sample.mtx'),[[3,0],[0,4]]));
+ok('upload Matrix Market symmetric',()=>assert.deepEqual(parseUploadedMatrix('%%MatrixMarket matrix coordinate real symmetric\n2 2 3\n1 1 2\n1 2 5\n2 2 7','sym.mtx'),[[2,5],[5,7]]));
 console.table(cases.map(([name,pass,detail=''])=>({name,pass,detail}))); const fail=cases.filter(x=>!x[1]); console.log(JSON.stringify({pass:cases.length-fail.length,fail:fail.length,total:cases.length},null,2)); if(fail.length) process.exit(1);

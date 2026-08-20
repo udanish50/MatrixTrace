@@ -1,6 +1,6 @@
 {
   "name": "matrixtrace",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "type": "module",
   "scripts": {
     "test": "node tests/test.js && node tests/public-data.test.js"
