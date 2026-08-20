@@ -1,0 +1,28 @@
+import assert from 'node:assert/strict';
+import {multiply,transpose,hadamard,kron,sparsity,classifyStructure,memoryModel,traceCell,estimateOps,normalizeRows,slice,parseMatrix} from '../engine.js';
+const cases=[]; const ok=(n,f)=>{try{f();cases.push([n,true])}catch(e){cases.push([n,false,e.message])}}
+ok('2x2 multiply',()=>assert.deepEqual(multiply([[1,2],[3,4]],[[5,6],[7,8]]),[[19,22],[43,50]]));
+ok('rectangular multiply',()=>assert.deepEqual(multiply([[1,2,3]],[[1],[2],[3]]),[[14]]));
+ok('identity',()=>assert.deepEqual(multiply([[2,3],[4,5]],[[1,0],[0,1]]),[[2,3],[4,5]]));
+ok('zeros',()=>assert.deepEqual(multiply([[0,0],[0,0]],[[1,2],[3,4]]),[[0,0],[0,0]]));
+ok('transpose',()=>assert.deepEqual(transpose([[1,2,3],[4,5,6]]),[[1,4],[2,5],[3,6]]));
+ok('hadamard',()=>assert.deepEqual(hadamard([[1,2]],[[3,4]]),[[3,8]]));
+ok('kron',()=>assert.deepEqual(kron([[1,2]],[[3],[4]]),[[3,6],[4,8]]));
+ok('sparsity',()=>assert.equal(sparsity([[0,1],[0,0]]),0.75));
+ok('diagonal detect',()=>assert.equal(classifyStructure([[1,0],[0,2]]).diagonal,true));
+ok('symmetric detect',()=>assert.equal(classifyStructure([[1,2],[2,1]]).symmetric,true));
+ok('upper detect',()=>assert.equal(classifyStructure([[1,2],[0,3]]).upper,true));
+ok('lower detect',()=>assert.equal(classifyStructure([[1,0],[2,3]]).lower,true));
+ok('bandwidth',()=>assert.equal(classifyStructure([[1,2,0],[3,4,5],[0,6,7]]).bandwidth,1));
+ok('memory model sparse wins',()=>assert.ok(memoryModel(Array.from({length:10},(_,i)=>Array.from({length:10},(_,j)=>i===j?1:0))).csrBytes < memoryModel(Array.from({length:10},(_,i)=>Array.from({length:10},(_,j)=>i===j?1:0))).denseBytes));
+ok('trace cell',()=>assert.equal(traceCell([[1,2],[3,4]],[[5,6],[7,8]],1,0).sum,43));
+ok('ops dense',()=>assert.equal(estimateOps([[1,1]],[[1],[1]]).denseMult,2));
+ok('ops sparse skip',()=>assert.ok(estimateOps([[1,0]],[[1],[1]]).skipped>0));
+ok('normalize',()=>assert.ok(Math.abs(normalizeRows([[3,4]])[0][0]-0.6)<1e-9));
+ok('slice',()=>assert.deepEqual(slice([[1,2,3],[4,5,6]],0,2,1,3),[[2,3],[5,6]]));
+ok('parse comma',()=>assert.deepEqual(parseMatrix('1,2\n3,4'),[[1,2],[3,4]]));
+ok('parse spaces',()=>assert.deepEqual(parseMatrix('1 2\n3 4'),[[1,2],[3,4]]));
+ok('dimension rejection',()=>assert.throws(()=>multiply([[1,2]],[[1,2]])));
+ok('ragged parse rejection',()=>assert.throws(()=>parseMatrix('1 2\n3')));
+ok('negative values',()=>assert.deepEqual(multiply([[-1,2]],[[3],[4]]),[[5]]));
+console.table(cases.map(([name,pass,detail=''])=>({name,pass,detail}))); const fail=cases.filter(x=>!x[1]); console.log(JSON.stringify({pass:cases.length-fail.length,fail:fail.length,total:cases.length},null,2)); if(fail.length) process.exit(1);
